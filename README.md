@@ -25,7 +25,7 @@ The helpbook URL points to a non-secured HTTP resource
 
 As soon as `ParallelsDesktopHelp.help` will be opened via `help:` URI, this URL will be displayed in the HelpViewer's window.
 
-Attacker with MITM access can respond to the HTTP request with own payload.
+An attacker with MITM access can respond to the HTTP request with own payload.
 
 > Apple has been hardening `HelpViewer.app` for a while. However, during the research, I found certain bypasses/HelpViewer features.
 
@@ -52,7 +52,7 @@ Example: `x-help-script://com.apple.machelp/scpt/OpnAppBndID.scpt?open,com.apple
 #### Bypass `x-help-script:` hardening
 
 After the latest patches, HelpViewer disallows triggering `x-help-script:` URI from HTTP resources.
-However, the fix is insufficient. Attacker could init server-side redirect from `http://download.parallels.com` to `https://attackerhost` and bypass restrictions, which allows running arbitrary apps on device.
+However, the fix is insufficient. Attacker could init server-side redirect from `http://download.parallels.com` to `https://attackerhost` and bypass restrictions, which allows running arbitrary apps on the device.
 
 **Impact**: Attacker can run arbitrary apps after redirect to HTTPS resource
 
