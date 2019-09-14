@@ -1,6 +1,13 @@
 # Parallels for Mac: `system_profiler` output leak and launching of arbitrary apps via help: URI
 
-// https://en.wikipedia.org/wiki/Apple_Help_Viewer
+> What is [Helpviewer.app](https://en.wikipedia.org/wiki/Apple_Help_Viewer)?
+
+<img src="./assets/parallels-helpviewer-firewall.gif" />
+
+## Intro
+
+What's your favorite security bug?
+One of my favorite bugs is [GPZ-1040](https://bugs.chromium.org/p/project-zero/issues/detail?id=1040).
 
 ## Summary
 
@@ -11,7 +18,7 @@ A remote attacker in a privileged network position can launch arbitrary apps and
 Parallels for Mac has a helpbook located at `/Applications/Parallels Desktop.app/Contents/Resources/ParallelsDesktopHelp.help`.
 The helpbook URL points to a non-secured HTTP resource
 
-```
+```xml
 	<key>HPDBookRemoteURL</key>
 	<string>http://download.parallels.com/desktop/v14/docs/</string>
 ```
@@ -22,16 +29,9 @@ Attacker with MITM access can respond to the HTTP request with own payload.
 
 > Apple has been hardening `HelpViewer.app` for a while. However, during the research, I found certain bypasses/HelpViewer features.
 
-### Attack vectors
+### Attack vector - Network
 
-Attacker can open Parallels helpbook in `HelpViewer.app` via:
-
-1. Trigger `help:` URI from the browser when the victim visits a webpage. **Safari** allows navigation to Helpviewer.app without confirmation from the user.
-2. Inject `help:` URI in mail apps. Default macOS `Mail.app` opens `help:` URI without confirmation.
-3. Inject `help:` URI in shortcut file. `.url` files allow launching URI schemes.
-4. Combine MITM with **1**. Assuming, attacker has MITM, they could launch `help:` from any HTTP resource requested by the victim.
-
-Summary: MITM access significantly decreases required user interaction for the exploitation. Also, this vulnerability could be triggered in many ways.
+Attacker can open Parallels helpbook in `HelpViewer.app` by navigating to `help:` URI from the browser when the victim visits a webpage. **Safari** and `Mail.app` allow navigation to `Helpviewer.app` without confirmation from the user.
 
 ### State of security in HelpViewer.app
 
@@ -79,18 +79,21 @@ HelpViewer.systemProfile(["SPFirewallDataType"]);
 
 ### RCE?
 
-As I said, `window.HelpViewer` bindings are poorly written and it's possible to find memory corruptions.
+As I said, `window.HelpViewer` bindings are poorly written (from security) and it should be possible to find memory corruptions.
 
 > Infinite loop: `HelpViewer.systemProfile({length: -11111})`
-
-But that's out of scope for "Parallels for Mac". I could continue my research, if that's valuable and could impact the bounty/severity estimate from your side.
 
 ## Version
 
 Parallels for Mac: 14.1.0 (45387)
 macOS: macOS 10.14.3
 
-## PoC
+## PoC for HelpViewer
+
+1. Copy HTML from `payload` variable from `attacker-https/index.js` to any helpbook on your system.
+2. Open this helpbook and navigate to this page.
+
+## PoC for Parallels for Mac
 
 > Make `attacker-https/rootCA.pem` and `attacker-https/rootCA-kry.pem` trusted to reproduce on https://127.0.0.1
 
@@ -105,7 +108,7 @@ macOS: macOS 10.14.3
 ## PoC Usage
 
 ```sh
-# trust certificates in `attacker-https` folder
+# make sure you trust certificates in `attacker-https` folder (or you can setup a remote https:// resource)
 npm i # install express
 # run entrypoint
 node ./entrypoint.js
@@ -125,7 +128,3 @@ Attacker in a privileged network position can run arbitrary apps, read device co
 ## Fix
 
 Just change `http` -> `https` :)
-
-## Additional materials
-
-Screencast and screenshots attached.
