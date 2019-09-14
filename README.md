@@ -1,4 +1,4 @@
-# Parallels for Mac: `system_profiler` output leak and launching of arbitrary apps via help: URI
+# Parallels for Mac: `system_profiler` output leak and launching of arbitrary apps from the web
 
 > What is [Helpviewer.app](https://en.wikipedia.org/wiki/Apple_Help_Viewer)?
 
