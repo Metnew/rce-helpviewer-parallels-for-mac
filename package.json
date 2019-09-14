@@ -1,0 +1,17 @@
+{
+	"name": "parallels-rce-mitm",
+	"version": "1.0.0",
+	"description": "macos+helpviewer+parallels rce",
+	"main": "index.js",
+	"dependencies": {
+		"express": "^4.17.1"
+	},
+	"devDependencies": {},
+	"scripts": {
+		"attacker-https": "node ./attacker-https/index.js",
+		"entrypoint": "node ./entrypoint.js",
+		"download-parallels": "node ./download.parallels.com.js"
+	},
+	"author": "",
+	"license": "ISC"
+}
